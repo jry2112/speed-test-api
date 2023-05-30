@@ -132,7 +132,8 @@ def verify_jwt(request):
 def root():
     return render_template(
         'index.html', user=None)
-    
+
+# Auth0 Login Routing    
 @app.route("/login")
 def login():
     return oauth.auth0.authorize_redirect(
@@ -150,6 +151,12 @@ def callback():
     resp.set_cookie('session_jwt', token, httponly=True)
     return resp
 
+# USER Routes
+
+
+# DEVICE Routes
+
+# TEST Routes
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
