@@ -1,4 +1,4 @@
-from datastore import get_client, make_entity
+from models.datastore import get_client, make_entity
 
 datastore_client = get_client()
 

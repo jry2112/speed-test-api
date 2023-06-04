@@ -150,14 +150,72 @@ def callback():
     token = json.dumps(token)
     resp.set_cookie('session_jwt', token, httponly=True)
     return resp
-
+# -------------------
 # USER Routes
+# -------------------
 
 
+# -------------------
 # DEVICE Routes
+# -------------------
+# GET all devices and CREATE a device
+@app.route('/devices', methods=['GET', 'POST'])
+def devices():
+    
+    if request.method == 'GET':
+        query_offset = int(request.args.get('offset', '0'))
+        pass
+    elif request.method == 'POST':
+        pass
+    else:
+        pass
+    
+@app.route('/devices/<int:device_id>', methods=['PUT', 'PATCH', 'DELETE'])
+def devices(device_id):
+    
+    if request.method == 'PUT':
+        pass
+    elif request.method == 'PATCH':
+        pass
+    elif request.method == 'DELETE':
+        pass
+    else:
+        pass
+    
+    return render_template(
+        'index.html', user=None)
 
+# -------------------    
 # TEST Routes
+# -------------------
 
+@app.route('/tests', methods=['GET', 'POST'])
+def devices():
+    
+    if request.method == 'GET':
+        query_offset = int(request.args.get('offset', '0'))
+        pass
+    elif request.method == 'POST':
+        pass
+    else:
+        pass
+    
+@app.route('/tests/<int:test_id>', methods=['PUT', 'PATCH', 'DELETE'])
+def devices(device_id):
+    
+    if request.method == 'PUT':
+        pass
+    elif request.method == 'PATCH':
+        pass
+    elif request.method == 'DELETE':
+        pass
+    else:
+        pass
+    
+    return render_template(
+        'index.html', user=None)
+    
+    
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
