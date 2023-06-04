@@ -16,7 +16,7 @@ KIND = "Test"
 BASE_URL = ''
 
 def add_test(data):
-    new_test = datastore.add_entity(KIND, data)
+    new_test = datastore.add_entity(BASE_URL, KIND, data)
     return new_test
 
 def get_test(test_id):

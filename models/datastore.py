@@ -3,11 +3,18 @@ from google.cloud import datastore
 datastore_client = datastore.Client()
 CURSOR_LIMIT = 5
 
+def add_id_self_to_entity(base_url, entity):
+    id = entity.key.id
+    self_url = f"{base_url}/{id}"
+    entity['id'] = id
+    entity['self'] = self_url
+    return entity
+
 def get_client():
     return datastore_client
 
 # Creates an Entity of Kind with given Data and stores in Datastore. Returns the entity with ID
-def add_entity(kind:str, data:dict, entity_id=None):
+def add_entity(base_url:str, kind:str, data:dict, entity_id=None):
     # Create a complete or incomplete key for an entity of kind Kind. An incomplete
     # key is one where Datastore will automatically generate an Id
     if entity_id:
@@ -24,8 +31,8 @@ def add_entity(kind:str, data:dict, entity_id=None):
     )
     
     datastore_client.put(entity)
-    # TODO: Generate ID and self
-    entity['id'] = entity.key.id
+    # Add ID and self
+    entity = add_id_self_to_entity(base_url, entity)
     
     return entity
 
@@ -39,12 +46,13 @@ def get_entities(base_url, kind, filter_list=None):
         for filter in filter_list:
             query.add_filter(*filter)
 
-    results = list(query.fetch())
-    # TODO: Create self URL
-    for entity in results:
-        self_url = base_url + ''
-        entity['id'] = entity.key.id
-        entity['self'] = self_url
+    query_results = list(query.fetch())
+    results = []
+    # Add ID and self
+    for i in range(len(query_results)):
+        entity = query_results[i]
+        entity = add_id_self_to_entity(base_url, entity)
+        results.append(entity)
 
     return results
 
@@ -61,7 +69,7 @@ def get_entities_page(base_url, kind, filter_list=None, q_offset=0):
     # Fetch the page
     query_iter = query.fetch(limit=CURSOR_LIMIT, offset=q_offset)
     page = next(query_iter.pages)
-    results = list(page)
+    query_results = list(page)
 
     # If there's more - udpate the cursor and next URL
     if query_iter.next_page_token:
@@ -70,11 +78,10 @@ def get_entities_page(base_url, kind, filter_list=None, q_offset=0):
     else:
         next_url = None
     # Add ID and self URL to results
-    for entity in results:
-        id = entity.key.id
-        self_url = f"{base_url}/{id}"
-        entity['id'] = id
-        entity['self'] = self_url
+    results = []
+    for entity in query_results:
+        updated_entity = add_id_self_to_entity(base_url, entity)
+        results.append(updated_entity)
 
     return results, next_url
 
@@ -83,13 +90,13 @@ def get_entity(base_url, kind, entity_id):
     key = datastore_client.key(kind, entity_id)
     target_entity = datastore_client.get(key)
     
-    # TODO: Update ID and self attributes
+    # Update ID and self attributes
     if target_entity:
-        target_entity["id"] = target_entity.id
-        target_entity["self"] = ''
+        target_entity = add_id_self_to_entity(base_url, target_entity)
+        return target_entity
 
 # Updates an Entity of Kind and ID.
-def update_entity(self_url, kind, entity_id, data:dict):
+def update_entity(base_url, kind, entity_id, data:dict):
     with datastore_client.transaction():
         # Retrieve the entity
         key = datastore_client.key(kind, entity_id)
@@ -99,6 +106,7 @@ def update_entity(self_url, kind, entity_id, data:dict):
             entity[data_key] = data_val
         datastore_client.put(entity)
     # TODO: Update the id and self
+    entity = add_id_self_to_entity(base_url, entity)
     return entity
 
 # Deletes an Entity of Kind and ID.

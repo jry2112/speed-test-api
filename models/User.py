@@ -14,10 +14,13 @@ import models.datastore as datastore
 KIND = "User"
 BASE_URL = ''
 
-def add_user(data):
-    # TODO: pull the user_id 
+def add_user(data): 
     user_id = data[id]
-    new_user = datastore.add_entity(KIND, data, user_id)
+    # If this is a new user, create the User
+    if datastore.get_entity(BASE_URL, KIND, user_id):
+        pass
+    # If this a returning User, increment their login count
+    new_user = datastore.add_entity(BASE_URL, KIND, data, user_id)
     return new_user
 
 def get_user(user_id):

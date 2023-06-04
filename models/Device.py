@@ -12,7 +12,7 @@ KIND = "Device"
 BASE_URL = ''
 
 def add_device(data):
-    new_device = datastore.add_entity(KIND, data)
+    new_device = datastore.add_entity(BASE_URL, KIND, data)
     return new_device
 
 def get_device(device_id):
