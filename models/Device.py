@@ -21,7 +21,9 @@ def get_device(device_id):
 
 def get_devices(owner_id, q_offset):
     filter_list = [['owner_id', '=', owner_id]]
-    target_devices, next_url = datastore.get_entities_page(BASE_URL, KIND, filter_list, q_offset)
+    result = datastore.get_entities_page(BASE_URL, KIND, filter_list, q_offset)
+    if result:
+        target_devices, next_url = result
     return target_devices, next_url
 
 def update_device_tests(device_id, test_id, add_test=False):

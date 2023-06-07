@@ -8,6 +8,8 @@ from werkzeug.exceptions import HTTPException
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
+from datetime import datetime
+import string
 from dotenv import find_dotenv, load_dotenv
 from models import User, Device, Test
 
@@ -142,7 +144,90 @@ def verify_jwt(request):
     }
 }
 '''
+# ----------------------------------------------------------------------
+# 
+# REQUEST DATA VALIDATION HELPERS
+# Validate data for creating Users, Devices, and Tests
+#
+# ---------------------------------------------------------------------- 
+MAX_STRING = 255
 
+def validate_user_data(data):
+    valid = False
+    user_keys =  {
+        'id': str,
+        'email': str,
+        'base_url': str
+    }
+    # Validate length of data
+    if len(user_keys) == len(data):
+        # Validate keys & values of data
+        for key, data_type in user_keys.items():
+            if type(data[key]) != data_type or len(data[key]) > MAX_STRING:
+                break
+        valid = True
+    return valid
+
+
+def validate_device_data(data):
+    valid = False
+    device_keys = {
+        "DeviceName": str,
+        "DeviceType":[],
+        "DeviceBrand":["M-Lab"]   
+    }
+    # Validate length of data
+    if len(device_keys) == len(data):
+        # Validate keys & values of data
+        if type(data["DeviceName"]) == device_keys["DeviceName"]:
+            if len(data["DeviceName"]) < MAX_STRING:
+                if data["DeviceType"] in device_keys["DeviceType"]:
+                    if data["DeviceBrand"] in device_keys["DeviceBrand"]:
+                        valid = True
+    return valid
+    
+
+
+def validate_test_data(data):
+    valid = False    
+    test_keys = {
+        "TestName": ["ndt5"],
+        "TestStartTime": datetime,
+        "TestEndTime": datetime,
+        "MurakamiLocation": str,
+        "MurakamiConnectionType": ["wired", "wireless"],
+        "MurakamiNetworkType": ["home", "commercial"],
+        "ServerName": str,
+        "ServerIP": str,
+        "ClientIP": str,
+        "DownloadUUID": str,
+        "DownloadValue": float,
+        "DownloadUnit": ["Mbit/s"],
+        "UploadValue": float,
+        "UploadUnit": ["Mbit/s"],
+        "DownloadRetransValue": float,
+        "DownloadRetransUnit": ["%"],
+        "MinRTTValue": float,
+        "MinRTTUnit": ["ms"]
+    }
+    
+    fixed_value_keys = ["TestName", "MurakamiConnectionType", "MurakamiNetworkType", "DownloadUnit", "UploadUnit", "DownloadRetransUnit", "MinRTTUnit"]
+    
+    # Validate length of data
+    if len(test_keys) == len(data):
+        for key, value in data.items():
+            if key not in test_keys:
+                break
+            if key in fixed_value_keys:
+                # Improper value set
+                if value not in fixed_value_keys[key]:
+                    break
+            else:
+                # Handle dynamic strings and float value
+               if type(value) != test_keys[key] or len(value) > MAX_STRING:
+                break
+        valid = True
+    return valid     
 
 @app.route('/')
 def root():
@@ -182,10 +267,11 @@ def show_user(user_id):
         'email': cur_jwt['userinfo']['name'],
         'base_url': base_url
     }
-    User.add_user(user_data)
-    # Show the user's JWT
-    return render_template(
-        'index.html', user=cur_jwt)
+    if validate_user_data(user_data):
+        User.add_user(user_data)
+        # Show the user's JWT
+        return render_template(
+            'index.html', user=cur_jwt)
 
 # -------------------
 # DEVICE Routes
@@ -194,27 +280,49 @@ def show_user(user_id):
 @app.route('/devices', methods=['GET', 'POST'])
 def devices():
     base_url = f"{request.url}"
-    if request.method == 'GET':
-        query_offset = int(request.args.get('offset', '0'))
-        owner_id = ''
-        devices, next_url = Device.get_devices(owner_id, query_offset)
-        pass
-    elif request.method == 'POST':
-        pass
-    else:
-        pass
+    # Missing or invalid JWT
+    response = 401, "Please provide valid JWT"
+    # Validate the JWT
+    payload = verify_jwt(request)
+    if payload:
+        # Grab the owner ID (sub)
+        owner_id = payload['sub']
+        print(owner_id)        
+        # Get all Devices for the Owner
+        if request.method == 'GET':
+            query_offset = int(request.args.get('offset', '0'))
+            devices, next_url = Device.get_devices(owner_id, query_offset)
+            pass
+        # Create a device
+        elif request.method == 'POST':
+            content = request.get_json()
+            if validate_device_data(content):
+                # add owner ID, test list then store the device
+                content['owner_id'] = owner_id
+                content['tests'] = []
+                Device.add_device(content)
+            else:
+                # TODO: Invalid data provided
+                pass
+        else:
+            pass
     
 @app.route('/devices/<int:device_id>', methods=['PUT', 'PATCH', 'DELETE'])
 def devices(device_id):
     base_url = f"{request.url}"
-    if request.method == 'PUT':
-        pass
-    elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    else:
-        pass
+    # Missing or invalid JWT
+    response = 401, "Please provide valid JWT"
+    # Validate the JWT
+    payload = verify_jwt(request)
+    if payload:
+        if request.method == 'PUT':
+            pass
+        elif request.method == 'PATCH':
+            pass
+        elif request.method == 'DELETE':
+            pass
+        else:
+            pass
     
     return render_template(
         'index.html', user=None)
@@ -224,7 +332,7 @@ def devices(device_id):
 # -------------------
 
 @app.route('/tests', methods=['GET', 'POST'])
-def devices():
+def tests():
     base_url = f"{request.url}"
     if request.method == 'GET':
         device_id = ''
@@ -232,7 +340,19 @@ def devices():
         devices, next_url = Test.get_tests(device_id, query_offset)
         pass
     elif request.method == 'POST':
-        pass
+        content = request.get_json()
+        # Convert timestamp to a datetime object
+        # datetime_object = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")    
+        if validate_test_data(content):
+            # validate that the test's device belongs to this owner
+            
+            # add device ID, test list then store the test
+            content['device_id'] = device_id
+            content['tests'] = []
+            Device.add_device(content)
+        else:
+            # TODO: Invalid data provided
+            pass
     else:
         pass
     
@@ -242,6 +362,7 @@ def devices(device_id):
     if request.method == 'PUT':
         pass
     elif request.method == 'PATCH':
+        # Make sure
         pass
     elif request.method == 'DELETE':
         pass

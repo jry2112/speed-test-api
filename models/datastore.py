@@ -120,3 +120,4 @@ def get_entity_attribute(kind, entity_id, attribute):
     target_entity = datastore_client.get(key)
     if target_entity:
         return target_entity[attribute]
+    
