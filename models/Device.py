@@ -9,30 +9,32 @@ import models.datastore as datastore
 # Devices can be (un)assigned to Users. Devices are assigned Tests that they perform
 # -------------------
 KIND = "Device"
-BASE_URL = ''
+base_url = ''
 
 def add_device(data):
-    new_device = datastore.add_entity(BASE_URL, KIND, data)
+    base_url = data.pop('base_url')
+    new_device = datastore.add_entity(base_url, KIND, data)
     return new_device
 
-def get_device(device_id):
-    target_device = datastore.get_entity(BASE_URL, KIND, device_id)
+def get_device(device_id, base_url):
+    target_device = datastore.get_entity(base_url, KIND, device_id)
     return target_device
 
-def get_devices(owner_id, q_offset):
+def get_devices(owner_id, q_offset, base_url):
     filter_list = [['owner_id', '=', owner_id]]
-    result = datastore.get_entities_page(BASE_URL, KIND, filter_list, q_offset)
-    if result:
-        target_devices, next_url = result
-    return target_devices, next_url
+    # Query for devices
+    result = datastore.get_entities_page(base_url, KIND, filter_list, q_offset)   
+    return result
 
-def update_device_tests(device_id, test_id, add_test=False):
+# Add or remove tests from a device
+def update_device_tests(base_url, device_id, test_id, add_test=False):
     cur_tests = datastore.get_entity_attribute(KIND, device_id, 'tests')
     if add_test:
         cur_tests.append(test_id)
     else:
         if test_id in cur_tests:
             cur_tests.remove(test_id)
+    # TODO: Create the self_url
     self_url = ''
     
     data = {'tests': cur_tests}

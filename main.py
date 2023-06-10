@@ -211,6 +211,7 @@ def validate_test_data(data):
         "MinRTTUnit": ["ms"]
     }
     
+    
     fixed_value_keys = ["TestName", "MurakamiConnectionType", "MurakamiNetworkType", "DownloadUnit", "UploadUnit", "DownloadRetransUnit", "MinRTTUnit"]
     
     # Validate length of data
@@ -227,7 +228,13 @@ def validate_test_data(data):
                if type(value) != test_keys[key] or len(value) > MAX_STRING:
                 break
         valid = True
-    return valid     
+    return valid    
+
+def create_response(data, status_code):
+    response = app.response_class(response=json.dumps(data), 
+                                  status=status_code,
+                                  mimetype='application/json')
+    return response 
 
 @app.route('/')
 def root():
@@ -257,7 +264,7 @@ def callback():
 # Display the JWT after login
 # Store the User in the Database
 @app.route("/user/<string:user_id>")
-def show_user(user_id):
+def add_user(user_id):
     base_url = f"{request.url}"
     cur_jwt = request.cookies.get('session_jwt')
     cur_jwt = json.loads(cur_jwt)
@@ -265,13 +272,29 @@ def show_user(user_id):
     user_data = {
         'id': cur_jwt['userinfo']['sub'],
         'email': cur_jwt['userinfo']['name'],
+        'devices': [],
         'base_url': base_url
     }
     if validate_user_data(user_data):
-        User.add_user(user_data)
+        new_user = User.add_user(user_data)
         # Show the user's JWT
         return render_template(
             'index.html', user=cur_jwt)
+        
+# GET all users
+@app.route('/users', methods=['GET'])
+def get_users():
+    if request.method == 'GET':
+        result = User.get_all_users()
+        if result:
+            response_json = result
+            status_code = 200
+        else:
+            # TODO: Error getting users
+            pass
+    else:
+        repsponse_json = {"Error": 'Method not recogonized.'}
+        status_code = None
 
 # -------------------
 # DEVICE Routes
@@ -281,18 +304,27 @@ def show_user(user_id):
 def devices():
     base_url = f"{request.url}"
     # Missing or invalid JWT
-    response = 401, "Please provide valid JWT"
     # Validate the JWT
     payload = verify_jwt(request)
-    if payload:
+    if not payload:
+        #TODO: Return invalid JWT response
+        response_json = {"Error": "Please provide valid JWT"}
+        response = 401
+        pass
+    elif payload:
         # Grab the owner ID (sub)
         owner_id = payload['sub']
         print(owner_id)        
         # Get all Devices for the Owner
         if request.method == 'GET':
             query_offset = int(request.args.get('offset', '0'))
-            devices, next_url = Device.get_devices(owner_id, query_offset)
-            pass
+            result = Device.get_devices(owner_id, query_offset)
+            if result:
+                response_json = result
+                status_code = 200
+            else:
+                # TODO: Error retrieving devices
+                pass
         # Create a device
         elif request.method == 'POST':
             content = request.get_json()
@@ -300,14 +332,23 @@ def devices():
                 # add owner ID, test list then store the device
                 content['owner_id'] = owner_id
                 content['tests'] = []
-                Device.add_device(content)
+                
+                response_json = Device.add_device(content)
+                if response_json:
+                    status_code = 201
             else:
                 # TODO: Invalid data provided
-                pass
+                repsponse_json = {"Error": "Invalid device data provided."}
+                status_code = None
+
         else:
+            # TODO: Invalid request provided
+            repsponse_json = {"Error": 'Method not recogonized.'}
+            status_code = None
             pass
+
     
-@app.route('/devices/<int:device_id>', methods=['PUT', 'PATCH', 'DELETE'])
+@app.route('/devices/<int:device_id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 def devices(device_id):
     base_url = f"{request.url}"
     # Missing or invalid JWT
@@ -315,6 +356,8 @@ def devices(device_id):
     # Validate the JWT
     payload = verify_jwt(request)
     if payload:
+        if request.method == 'GET':
+            pass
         if request.method == 'PUT':
             pass
         elif request.method == 'PATCH':
@@ -322,6 +365,9 @@ def devices(device_id):
         elif request.method == 'DELETE':
             pass
         else:
+            # TODO: Invalid request provided
+            repsponse_json = {"Error": 'Method not recogonized.'}
+            status_code = None
             pass
     
     return render_template(
@@ -337,14 +383,28 @@ def tests():
     if request.method == 'GET':
         device_id = ''
         query_offset = int(request.args.get('offset', '0'))
-        devices, next_url = Test.get_tests(device_id, query_offset)
+        result = Test.get_tests(device_id, query_offset)
+        if result:
+            repsponse_json = result
+            status_code = 200
+        else:
+            # Error retrieving tests
+            pass
         pass
     elif request.method == 'POST':
         content = request.get_json()
+        timestamp_keys = ["TestStartTime", "TestEndTime"]
         # Convert timestamp to a datetime object
-        # datetime_object = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")    
+        for key in timestamp_keys:
+            date_string = content[key]
+            try:
+                content[key] = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")
+            except:
+                # TODO: Invalid data provided
+                pass
         if validate_test_data(content):
-            # validate that the test's device belongs to this owner
+            # TODO: validate that the test's device belongs to this owner
+            device
             
             # add device ID, test list then store the test
             content['device_id'] = device_id
@@ -354,21 +414,30 @@ def tests():
             # TODO: Invalid data provided
             pass
     else:
+        # TODO: Invalid request provided
+        repsponse_json = {"Error": 'Method not recogonized.'}
+        status_code = None
         pass
     
 @app.route('/tests/<int:test_id>', methods=['PUT', 'PATCH', 'DELETE'])
 def devices(device_id):
     base_url = f"{request.url}"
     if request.method == 'PUT':
+        # TODO: make changes to all of the test fields
         pass
     elif request.method == 'PATCH':
-        # Make sure
+        # TODO: make changes to some of the test fields
+        
         pass
     elif request.method == 'DELETE':
+        # TODO: Delete the test and update the device's tests
         pass
     else:
+        # TODO: Invalid request provided
+        repsponse_json = {"Error": 'Method not recogonized.'}
+        status_code = None
         pass
-    
+    # TODO: if the device_id has been updated, also update the old device and new device
     return render_template(
         'index.html', user=None)
     

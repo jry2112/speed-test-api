@@ -70,6 +70,9 @@ def get_entities_page(base_url, kind, filter_list=None, q_offset=0):
     query_iter = query.fetch(limit=CURSOR_LIMIT, offset=q_offset)
     page = next(query_iter.pages)
     query_results = list(page)
+    
+    # Get the total count of matching entities
+    total_count = query_iter.num_results
 
     # If there's more - udpate the cursor and next URL
     if query_iter.next_page_token:
@@ -77,13 +80,17 @@ def get_entities_page(base_url, kind, filter_list=None, q_offset=0):
         next_url = base_url + "?limit=" + str(CURSOR_LIMIT) + "&offset=" + str(next_offset)
     else:
         next_url = None
-    # Add ID and self URL to results
-    results = []
+    # Add ID, self URL, and count to results
+    results = {
+        'entities': [],
+        'count': total_count,
+        'next': next_url
+    }
     for entity in query_results:
         updated_entity = add_id_self_to_entity(base_url, entity)
-        results.append(updated_entity)
+        results['entities'].append(updated_entity)
 
-    return results, next_url
+    return results
 
 # Gets an Entity of Kind and ID. Returns the Entity if found. Entities include self URL
 def get_entity(base_url, kind, entity_id):
