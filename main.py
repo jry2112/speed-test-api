@@ -169,27 +169,50 @@ def validate_user_data(data):
     return valid
 
 
-def validate_device_data(data):
+def validate_device_data(data:dict, put_request=True):
     valid = False
     device_keys = {
         "DeviceName": str,
-        "DeviceType":[],
-        "DeviceBrand":["M-Lab"]   
+        "DeviceType":["E9"],
+        "DeviceBrand":["Dell"]   
     }
-    # Validate length of data
-    if len(device_keys) == len(data):
-        # Validate keys & values of data
-        if type(data["DeviceName"]) == device_keys["DeviceName"]:
-            if len(data["DeviceName"]) < MAX_STRING:
-                if data["DeviceType"] in device_keys["DeviceType"]:
-                    if data["DeviceBrand"] in device_keys["DeviceBrand"]:
-                        valid = True
+    if put_request:
+        # Validate length of data
+        if len(device_keys) == len(data):
+            # Validate keys & values of data
+            if type(data["DeviceName"]) == device_keys["DeviceName"]:
+                if len(data["DeviceName"]) < MAX_STRING:
+                    if data["DeviceType"] in device_keys["DeviceType"]:
+                        if data["DeviceBrand"] in device_keys["DeviceBrand"]:
+                            valid = True
+    else:
+        valid_patch = True
+        # Validate the PATCH request
+        for key, value in data.items():
+            if key not in device_keys:
+                valid_patch = False
+                break
+            if key == "DeviceName":
+                if type(value) != str or len(value) > MAX_STRING:
+                    valid_patch = False
+                    break
+            elif key == "DeviceType":
+                if value not in device_keys["DeviceType"]:
+                    valid_patch = False
+                    break
+            elif key == "DeviceBrand":
+                if value not in device_keys["DeviceBrand"]:
+                    valid_patch = False
+                    break
+                
+        valid = valid_patch        
+                    
     return valid
     
 
 
-def validate_test_data(data):
-    valid = False    
+def validate_test_data(data, put_request = True):
+    valid = True    
     test_keys = {
         "TestName": ["ndt5"],
         "TestStartTime": datetime,
@@ -208,26 +231,71 @@ def validate_test_data(data):
         "DownloadRetransValue": float,
         "DownloadRetransUnit": ["%"],
         "MinRTTValue": float,
-        "MinRTTUnit": ["ms"]
+        "MinRTTUnit": ["ms"],
+        "device_id": None
     }
     
     
     fixed_value_keys = ["TestName", "MurakamiConnectionType", "MurakamiNetworkType", "DownloadUnit", "UploadUnit", "DownloadRetransUnit", "MinRTTUnit"]
+    # Verify device_id
+    if data["device_id"] is not None:
+       # Add device_id to test keys and validate device
+        test_keys['device_id'] = str 
+        device_id = data['device_id']
+        if Device.check_for_device(device_id) != True:  
+            valid = False
+            return valid
     
-    # Validate length of data
-    if len(test_keys) == len(data):
-        for key, value in data.items():
-            if key not in test_keys:
-                break
-            if key in fixed_value_keys:
-                # Improper value set
-                if value not in fixed_value_keys[key]:
+            
+    if put_request:
+        # Validate length of data
+        if len(test_keys) == len(data):
+            for key, value in data.items():
+                if key not in test_keys and key != 'device_id':
+                    print(key)
+                    valid = False
                     break
-            else:
-                # Handle dynamic strings and float value
-               if type(value) != test_keys[key] or len(value) > MAX_STRING:
-                break
-        valid = True
+                if key in fixed_value_keys:
+                    # Improper value set
+                    if value not in test_keys[key]:
+                        print(key, value)
+                        valid = False
+                        break
+                else:
+                    # Handle dynamic strings and float value
+                    if (type(value) != test_keys[key] or (type(value) == str and len(value) > MAX_STRING)) and key != 'device_id':
+                        print(type(key), key, value)
+                        valid = False
+                        break
+
+        else:
+            print(len(test_keys), len(data))
+            valid = False    
+    else:
+        if len(data) > len(test_keys):
+            valid = False
+        else:
+            for key, value in data.items():
+                if key not in test_keys:
+                    
+                    valid = False
+                    break
+                if key in fixed_value_keys:
+                    print(key)
+                    # Improper value set
+                    if value not in test_keys[key]:
+                        print(value, key)
+                        print(test_keys[key])
+                        valid = False
+                        break
+                else:
+                    # Handle dynamic strings and float value
+                    if (type(value) != test_keys[key] or (type(value) == str and len(value) > MAX_STRING)) and key != 'device_id':
+                        print(value, key)
+                        print(test_keys[key])
+                        valid = False
+                        break       
+    
     return valid    
 
 def create_response(data, status_code):
@@ -258,11 +326,14 @@ def callback():
     token = json.dumps(token)
     resp.set_cookie('session_jwt', token, httponly=True)
     return resp
+
+
 # -------------------
 # USER Routes
 # -------------------
 # Display the JWT after login
 # Store the User in the Database
+
 @app.route("/user/<string:user_id>")
 def add_user(user_id):
     base_url = f"{request.url}"
@@ -275,10 +346,11 @@ def add_user(user_id):
         'devices': [],
         'base_url': base_url
     }
-    if validate_user_data(user_data):
-        new_user = User.add_user(user_data)
+    print(user_data)
+    new_user = User.add_user(user_data)
+    print(new_user)
         # Show the user's JWT
-        return render_template(
+    return render_template(
             'index.html', user=cur_jwt)
         
 # GET all users
@@ -286,15 +358,20 @@ def add_user(user_id):
 def get_users():
     if request.method == 'GET':
         result = User.get_all_users()
+        print("fetched users", result)
         if result:
             response_json = result
             status_code = 200
         else:
-            # TODO: Error getting users
+            # Error getting users
+            response_json = {"Error": "Unable to process request."}
+            status_code = 400
             pass
     else:
-        repsponse_json = {"Error": 'Method not recogonized.'}
-        status_code = None
+        response_json = {"Error": 'Method not recogonized.'}
+        status_code = 405
+        
+    return create_response(response_json, status_code)
 
 # -------------------
 # DEVICE Routes
@@ -302,144 +379,447 @@ def get_users():
 # GET all devices and CREATE a device
 @app.route('/devices', methods=['GET', 'POST'])
 def devices():
-    base_url = f"{request.url}"
+    base_url = f"{request.host_url}devices"
     # Missing or invalid JWT
     # Validate the JWT
     payload = verify_jwt(request)
     if not payload:
-        #TODO: Return invalid JWT response
+        # Return invalid JWT response
         response_json = {"Error": "Please provide valid JWT"}
-        response = 401
-        pass
+        status_code = 401
     elif payload:
         # Grab the owner ID (sub)
         owner_id = payload['sub']
-        print(owner_id)        
+        print(owner_id)
+        mime_types = request.accept_mimetypes
+        print(mime_types)
+        if 'application/json' not in mime_types:
+            # Invalid Mimetype
+            status_code = 406
+            response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+            response = create_response(response_json, status_code)
+            return response        
         # Get all Devices for the Owner
         if request.method == 'GET':
-            query_offset = int(request.args.get('offset', '0'))
-            result = Device.get_devices(owner_id, query_offset)
-            if result:
+            # Verify the owner exists
+            owner = User.get_user(owner_id, base_url)
+            if owner:
+                device_url = f"{request.host_url}devices"
+                query_offset = int(request.args.get('offset', '0'))
+                result = Device.get_devices(owner_id, query_offset, device_url)
+                print(result)
+                for device in result["entities"]:
+                    print(device["tests"])
+                    for i in range(len(device["tests"])):
+                        test_id = device["tests"][i]
+                        device["tests"][i] = {"id": test_id,
+                                "self": f"{request.host_url}tests/{test_id}"}
                 response_json = result
                 status_code = 200
             else:
-                # TODO: Error retrieving devices
-                pass
+                # Invalid Owner ID provided
+                status_code = 404
+                response_json = {"Error": "Invalid User ID provided."}
+                    
         # Create a device
         elif request.method == 'POST':
+            # Request must be JSON
             content = request.get_json()
             if validate_device_data(content):
                 # add owner ID, test list then store the device
                 content['owner_id'] = owner_id
                 content['tests'] = []
+                content['base_url'] = f"{request.host_url}devices"
                 
-                response_json = Device.add_device(content)
-                if response_json:
+                result = Device.add_device(content)
+                if result:
                     status_code = 201
+                    response_json = result
+                    print(result)
             else:
-                # TODO: Invalid data provided
-                repsponse_json = {"Error": "Invalid device data provided."}
-                status_code = None
-
+                # Invalid data provided
+                response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                status_code = 400
         else:
-            # TODO: Invalid request provided
-            repsponse_json = {"Error": 'Method not recogonized.'}
-            status_code = None
-            pass
+            # Invalid request provided
+            response_json = {"Error": 'Method not recogonized.'}
+            status_code = 405
+            
+        response = create_response(response_json, status_code)
+        return response
 
     
 @app.route('/devices/<int:device_id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
-def devices(device_id):
-    base_url = f"{request.url}"
+def manage_a_device(device_id):
+    base_url = f"{request.host_url}devices"
     # Missing or invalid JWT
-    response = 401, "Please provide valid JWT"
+    status_code = 401
+    response_json = {"Error": "Please provide valid JWT"}
     # Validate the JWT
     payload = verify_jwt(request)
     if payload:
-        if request.method == 'GET':
-            pass
-        if request.method == 'PUT':
-            pass
-        elif request.method == 'PATCH':
-            pass
-        elif request.method == 'DELETE':
-            pass
-        else:
-            # TODO: Invalid request provided
-            repsponse_json = {"Error": 'Method not recogonized.'}
-            status_code = None
-            pass
+        owner_id = payload['sub']
+        
+        if Device.check_for_device(device_id) == False:
+            response_json = {"Error": "No device with this device_id exists"}
+            status_code = 404
+        else:    
+            if request.method == 'GET':
+                mime_types = request.accept_mimetypes
+                if 'application/json' not in mime_types:
+                    # Invalid Mimetype
+                    status_code = 406
+                    response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+                    response = create_response(response_json, status_code)
+                    return response
+                else:
+                    device = Device.get_device(device_id, base_url)
+                    if device:
+                        # Verify ownership
+                        if device["owner_id"] == owner_id:
+                            print("verified ownership")
+                            
+                            for i in range(len(device["tests"])):
+                                test_id = device["tests"][i]
+                                device["tests"][i] = {"id": test_id,
+                                    "self": f"{request.host_url}tests/{test_id}"}
+                            response_json = device
+                            status_code = 200
+                        else:
+                            response_json = {"Error": "Unauthorized action."}
+                            status_code = 403
+                    else:
+                        # Invalid device ID
+                        response_json = {"Error": "No device with this device_id exists"}
+                        status_code = 404
+                
+                
+            elif request.method == 'PUT':
+                mime_types = request.accept_mimetypes
+                if 'application/json' not in mime_types:
+                    # Invalid Mimetype
+                    status_code = 406
+                    response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+                else:
+                    content = request.get_json()
+                    # Verify request data and validate ownership
+                    if validate_device_data(content) == False:
+                        response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                        status_code = 400
+                        
+                    elif owner_id != Device.get_device_owner(device_id):
+                        response_json = {"Error": "Unauthorized action."}
+                        status_code = 403
+                    # Update the device
+                    else:
+                        # Update the tests
+                        cur_tests = Device.get_device(device_id, base_url)["tests"]
+                        if cur_tests:
+                            test_url = f"{request.host_url}tests"
+                            for test_id in cur_tests:
+                                Test.update_test_device(test_id, None, test_url)
+                        # Update device
+                        Device.update_device(base_url, device_id, content)
+                        response_json = {}
+                        status_code = 204
+                        
+                    
+            elif request.method == 'PATCH':
+                mime_types = request.accept_mimetypes
+                if 'application/json' not in mime_types:
+                    # Invalid Mimetype
+                    status_code = 406
+                    response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+                else:
+                    content = request.get_json()
+                    
+                    # Validate data and ownership
+                    if validate_device_data(content, put_request=False) == False:
+                        response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                        status_code = 400
+                        
+                    elif owner_id != Device.get_device_owner(device_id):
+                        response_json = {"Error": "Unauthorized action."}
+                        status_code = 403
+                    # Update the device
+                    else:
+                        if "tests" in content:
+                            cur_tests = Device.get_device(device_id, base_url)["tests"]
+                            if cur_tests:
+                                test_url = f"{request.host_url}tests"
+                                for test_id in cur_tests:
+                                    Test.update_test_device(test_id, None, test_url)
+                        Device.update_device(base_url, device_id, content)
+                        response_json = {}
+                        status_code = 204
+                    
+                
+            elif request.method == 'DELETE':
+                mime_types = request.accept_mimetypes
+                if 'application/json' not in mime_types:
+                    # Invalid Mimetype
+                    status_code = 406
+                    response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+                else:
+                    if owner_id != Device.get_device_owner(device_id):
+                        response_json = {"Error": "Unauthorized action."}
+                        status_code = 403
+                    else:
+                        # update the device's tests
+                        cur_tests = Device.get_device_tests(device_id)
+                        if cur_tests:
+                            test_url = f"{request.host_url}tests"
+                            for test_id in cur_tests:
+                                Test.update_test_device(test_id, None, test_url)
+                        Device.delete_device(device_id)
+                        response_json = {}
+                        status_code = 204
+                    
+            else:
+                # Invalid request provided
+                response_json = {"Error": 'Method not recogonized.'}
+                status_code = 405
+                
+    else:
+        # Invalid Authorization
+        response_json = {"Error": "Please provide valid JWT"}
+        status_code = 401
     
-    return render_template(
-        'index.html', user=None)
+    response = create_response(response_json, status_code)
+    
+    return response
 
 # -------------------    
 # TEST Routes
 # -------------------
+timestamp_keys = ["TestStartTime", "TestEndTime"]
 
 @app.route('/tests', methods=['GET', 'POST'])
 def tests():
-    base_url = f"{request.url}"
+    base_url = f"{request.host_url}tests"
+     
     if request.method == 'GET':
-        device_id = ''
         query_offset = int(request.args.get('offset', '0'))
-        result = Test.get_tests(device_id, query_offset)
+        result = Test.get_all_tests(query_offset, base_url)
         if result:
-            repsponse_json = result
+            for test in result["entities"]:
+                for key in timestamp_keys:
+                    if key in test:
+                        dt = test[key]
+                        print(key, dt)
+                        test[key] = dt.strftime("%Y-%m-%dT%H:%M:%S.%f")
+                
+            response_json = result
             status_code = 200
         else:
             # Error retrieving tests
-            pass
+            response_json = {"Error": "Error retrieving results"}
+            status_code = 404
         pass
     elif request.method == 'POST':
         content = request.get_json()
-        timestamp_keys = ["TestStartTime", "TestEndTime"]
+        # Get the device id if included
+        if 'device_id' in content:
+            device_id = content['device_id']
+            if Device.check_for_device(device_id) == False:
+                response_json = {"Error": "No device with this device_id exists."}
+                status_code = 404
+                response = create_response(response_json, status_code)
+                return response
+        else:
+            content['device_id'] = None
+            
         # Convert timestamp to a datetime object
         for key in timestamp_keys:
             date_string = content[key]
             try:
                 content[key] = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")
+                print(key, type(content[key]))
             except:
-                # TODO: Invalid data provided
-                pass
+                # Invalid data provided
+                response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                status_code = 400
+                break
+        
         if validate_test_data(content):
-            # TODO: validate that the test's device belongs to this owner
-            device
-            
-            # add device ID, test list then store the test
-            content['device_id'] = device_id
-            content['tests'] = []
-            Device.add_device(content)
+            content["base_url"] = f"{request.host_url}tests"
+            test = Test.add_test(content)
+            for key in timestamp_keys:
+                dt = content[key]
+                test[key] = dt.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            response_json = test
+            status_code = 201
         else:
-            # TODO: Invalid data provided
-            pass
+            # Invalid data provided
+            response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+            status_code = 400
     else:
         # TODO: Invalid request provided
-        repsponse_json = {"Error": 'Method not recogonized.'}
-        status_code = None
+        response_json = {"Error": 'Method not recogonized.'}
+        status_code = 405
         pass
     
-@app.route('/tests/<int:test_id>', methods=['PUT', 'PATCH', 'DELETE'])
-def devices(device_id):
-    base_url = f"{request.url}"
-    if request.method == 'PUT':
-        # TODO: make changes to all of the test fields
-        pass
-    elif request.method == 'PATCH':
-        # TODO: make changes to some of the test fields
+    response = create_response(response_json, status_code)
+    return response
+    
+@app.route('/tests/<int:test_id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
+def manage_a_test(test_id):
+    base_url = f"{request.host_url}tests"
+    mime_types = request.accept_mimetypes
+    status_code = None
+    if 'application/json' not in mime_types:
+            # Invalid Mimetype
+            status_code = 406
+            response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+            response = create_response(response_json, status_code)
+            return response
         
-        pass
+    if Test.check_for_test(test_id) == False:
+        response_json = {"Error": "No test exists with this test_id."}
+        status_code = 404
+        response = create_response(response_json, status_code)
+        return response
+        
+    if request.method == 'GET':
+        test = Test.get_test(test_id, base_url)
+        if test:
+            for key in timestamp_keys:
+                dt = test[key]
+                test[key] = dt.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            response_json = test
+            status_code = 200
+        else:
+            response_json = {"Error": "No test exists with this test_id."}
+            status_code = 404
+    elif request.method == 'PUT':
+        # make changes to all of the test fields
+        mime_types = request.accept_mimetypes
+        if 'application/json' not in mime_types:
+            # Invalid Mimetype
+            status_code = 406
+            response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+        else:
+            content = request.get_json()
+            if "device_id" in content:
+                if Device.check_for_device(content["device_id"]) == False:
+                    response_json = {"Error": "The request object contains an invalid device_id."}
+                    status_code = 404
+                    response = create_response(response_json, status_code)
+                    return response
+                else:
+                    for key in timestamp_keys:
+                        print(key)
+                        date_string = content[key]
+                        # print(date_string)
+                    try:
+                        content[key] = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")
+                        print(key, type(content[key]), content[key])
+                    except:
+                        # Invalid data provided
+                        response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                        status_code = 400
+                        response = create_response(response_json, status_code)
+                        return response
+                    content["TestStartTime"] = datetime.strptime(content["TestStartTime"], "%Y-%m-%dT%H:%M:%S.%f")
+                    
+                    # for key, value in content.items():
+                        # print(key, type(value))
+                    # Verify request data and validate ownership
+                    if validate_test_data(content, put_request=True) == False:
+                        response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                        status_code = 400
+                    
+            
+                if not status_code:
+                    device_url = f"{request.host_url}devices"
+                    # Update the device's tests
+                    # Add to new device
+                    if content["device_id"] != None:
+                        Device.update_device_tests(device_url, content["device_id"], test_id, add_test=True) 
+                    # Remove from old device
+                    old_device_id = Test.get_test_device(test_id)
+                    if old_device_id:
+                        Device.update_device_tests(device_url, old_device_id, test_id, add_test=False)   
+                    # Update the test
+                    Test.update_test(base_url, test_id, content)
+                    response_json = {}
+                    status_code = 204
+        
+    elif request.method == 'PATCH':
+        # make changes to some of the test fields
+        mime_types = request.accept_mimetypes
+        if 'application/json' not in mime_types:
+            # Invalid Mimetype
+            status_code = 406
+            response_json = {"Error": "Not Acceptable - Invalid Accept Header"}
+        else:
+            content = request.get_json()
+            for key in timestamp_keys:
+                if key in content:
+                    print(key)
+                    try:
+                        date_string = content[key]
+                        content[key] = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")
+                        print(key, type(content[key]), content[key])
+                    except:
+                        # Invalid data provided
+                        response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                        status_code = 400
+                        response = create_response(response_json, status_code)
+                        return response
+            # Verify request data and validate ownership
+            if validate_test_data(content, put_request=False) == False:
+                response_json = {"Error": "The request object is missing at least one of the required attributes or has an additional attribute."}
+                status_code = 400
+                response = create_response(response_json, status_code)
+                return response
+            
+            if "device_id" in content:
+                if Device.check_for_device(content["device_id"]) == False:
+                    response_json = {"Error": "The request object contains an invalid device_id."}
+                    status_code = 404
+                    response = create_response(response_json, status_code)
+                    return response
+                else:
+                    device_url = f"{request.host_url}devices"
+                    # Update the device's tests
+                    # Add to new device
+                    if content["device_id"] != None:
+                        Device.update_device_tests(device_url, content["device_id"], test_id, add_test=True) 
+                    # Remove from old device
+                    old_device_id = Test.get_test_device(test_id)
+                    if old_device_id:
+                        Device.update_device_tests(device_url, old_device_id, test_id, add_test=False)
+                
+            # Update the test        
+            Test.update_test(base_url, test_id, content)
+            response_json = {}
+            status_code = 204
+        
     elif request.method == 'DELETE':
-        # TODO: Delete the test and update the device's tests
-        pass
+        test = Test.get_test(test_id, base_url)
+        if test:
+            # Update device's test list
+            device_id = test["device_id"]
+            if device_id:
+                device_url = f"{request.host_url}devices"
+                Device.update_device_tests(device_url, device_id, test_id)
+            # Delete the test
+            Test.delete_test(test_id)
+            response_json = {}
+            status_code = 204
+        else:
+            # Invalid test_id
+            response_json = {"Error": "No test with this test_id exists"}
+            status_code = 404
     else:
-        # TODO: Invalid request provided
-        repsponse_json = {"Error": 'Method not recogonized.'}
-        status_code = None
-        pass
-    # TODO: if the device_id has been updated, also update the old device and new device
-    return render_template(
-        'index.html', user=None)
+        # Invalid request provided
+        response_json = {"Error": 'Method not recogonized.'}
+        status_code = 405
+        
+    
+    response = create_response(response_json, status_code)
+    return response
     
     
 if __name__ == '__main__':

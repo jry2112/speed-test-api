@@ -1,0 +1,3706 @@
+{
+	"info": {
+		"_postman_id": "882c4ec8-6b97-4541-891b-20174ba06305",
+		"name": "cloud_final",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17188855"
+	},
+	"item": [
+		{
+			"name": "GET Home",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for apprropriate status code 200\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}",
+					"host": [
+						"{{app_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get JWT Token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"grant_type\": \"password\",\r\n    \"username\": \"puppywally@cars.com\",\r\n    \"password\":\"password1234!\",\r\n    \"client_id\": \"1jND5yVUmkOgeKeXB3YIQugIvwXAtQZG\",\r\n    \"client_secret\": \"hd7Fn74u2GOWSeDMx1QER9dxl-xxW5VIPSnLCanOeJNzUJS5v019g29LyDdL5gGP\"}"
+				},
+				"url": {
+					"raw": "https://dev-8dtgcbcls7kucnpa.us.auth0.com/oauth/token",
+					"protocol": "https",
+					"host": [
+						"dev-8dtgcbcls7kucnpa",
+						"us",
+						"auth0",
+						"com"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set user_id environment variable from cookies\r",
+							"pm.environment.set(\"token\", pm.cookies.get('session'));\r",
+							"\r",
+							"pm.test(\"302 status code\", function () {\r",
+							"    //Check for 302 status code\r",
+							"    pm.response.to.have.status(302);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"puppywally@cars.com\",\r\n    \"password\":\"password1234!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/login",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check if the content is valid\r",
+							"    pm.expect(pm.response.json()[\"user_ids\"]);\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"const user_ids = pm.response.json()[\"user_ids\"]\r",
+							"\r",
+							"pm.environment.set(\"user01_id\", user_ids[0])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/users",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Devices Authorized 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check if the content is valid\r",
+							"    pm.expect(pm.response.json()[\"entities\"]).to.deep.equal([]);\r",
+							"    pm.expect(pm.response.json()[\"count\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"next\"]).to.eq(null);\r",
+							"    \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "405 Invalid Method Devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"405 status code\", function () {\r",
+							"    //Check for 405 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Devices UnAuth 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {\r",
+							"    //Check for 401 unauth response code\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device Authorized 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Device with additional attributes 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\",\r\n    \"SpeedMeausre\": 400   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Device with missing attributes 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Device with invalid Accept 406",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {\r",
+							"    //Check for error code 406\r",
+							"    pm.response.to.have.status(406);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"406 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"Not Acceptable - Invalid Accept Header\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/csv",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"The Destroyer\",\r\n    \"type\":\"Barge\",\r\n    \"length\": 123,\r\n    \"public\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Device NoAuth 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {\r",
+							"    //Check for 401 unauth response code\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Devices Authorized 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"confirm ownership test\", function () {\r",
+							"    // Check that all returned devices belong to the current user\r",
+							"    pm.expect(Object.keys(pm.response.json()).length).to.be.at.least(1);\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Devices with invalid Accept header 406",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {\r",
+							"    //Check for error code 406\r",
+							"    pm.response.to.have.status(406);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"406 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"Not Acceptable - Invalid Accept Header\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/cmd",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device with invalid ID 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No device with this device_id exists\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device UnAuth 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {\r",
+							"    //Check for 401 unauth response code\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Updated_Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device Authorized after edit 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Updated_Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"    pm.expect(pm.response.json()[\"owner_id\"]).to.eq(pm.environment.get(\"user01_id\"));\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with invalid attribute 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": 1234,\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with missing attribute 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with invalid id 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No device with this device_id exists\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device UnAuth 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {\r",
+							"    //Check for 401 unauth response code\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Updated_Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device Not Owner 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {\r",
+							"    //Check for 403 unauth response code\r",
+							"    pm.response.to.have.status(403);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "jwt2",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Updated_Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Device Not Owner 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {\r",
+							"    //Check for 403 unauth response code\r",
+							"    pm.response.to.have.status(403);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "jwt2",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Updated_Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device Authorized after edit 200 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"    \r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with missing attributes 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Updated_Test_Device_01\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device Authorized after edit 200 Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Updated_Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with invalid attributes 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": 1234  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit Device with invalid ID 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No device with this device_id exists\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"New_Device\"  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Test with missing attributes 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0\r\n  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test not assigned 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"confirm content test\", function () {\r",
+							"    // Check that all returned tests are unassigned\r",
+							"    pm.expect(Object.keys(pm.response.json()).length).to.be.at.least(1);\r",
+							"    pm.expect(pm.response.json().device_id).to.equal(null);\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Assigned Test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    pm.expect(pm.response.json()[\"device_id\"]).to.eq(pm.environment.get(\"device01_id\"))\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test02_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test assigned 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"confirm content test\", function () {\r",
+							"    // Check that all returned tests are unassigned\r",
+							"    pm.expect(Object.keys(pm.response.json()).length).to.be.at.least(1);\r",
+							"    pm.expect(pm.response.json().device_id).to.equal(pm.environment.get(\"device01_id\"));\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test02_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test02_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test with invalid accept header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {\r",
+							"    //Check for error code 406\r",
+							"    pm.response.to.have.status(406);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"406 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"Not Acceptable - Invalid Accept Header\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/csv",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test with invalid test id 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No test exists with this test_id.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create Assigned Test invalid device ID 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No device with this device_id exists.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": \"abc123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT assign Test to Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Test after device assigned 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"confirm content test\", function () {\r",
+							"    // Check that all returned tests are unassigned\r",
+							"    pm.expect(Object.keys(pm.response.json()).length).to.be.at.least(1);\r",
+							"    pm.expect(pm.response.json().device_id).to.equal(pm.environment.get(\"device01_id\"));\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device after test assigned 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Updated_Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"][0][\"id\"]).to.eq(pm.environment.get(\"test01_id\"));\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT assign Test to Device invalid device ID 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {\r",
+							"   //Check for error code 404\r",
+							"   pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for error code 404\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object contains an invalid device_id.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": \"abc123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT assign Test to Device invalid test ID 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {\r",
+							"   //Check for error code 404\r",
+							"   pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for error code 404\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No test exists with this test_id.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reassign Test to Device 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test02_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test02_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Test after device assigned 200 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"confirm content test\", function () {\r",
+							"    // Check that all returned tests are unassigned\r",
+							"    pm.expect(Object.keys(pm.response.json()).length).to.be.at.least(1);\r",
+							"    pm.expect(pm.response.json().device_id).to.equal(pm.environment.get(\"device01_id\"));\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test02_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test02_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a Device after test assigned 200 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reassign Test to Device invalid test id 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 not found\", function () {\r",
+							"    //Check for 404 status code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"404 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"    pm.expect(pm.response.json()[\"Error\"]).to.equal(\"No test exists with this test_id.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reassign Test to Device invalid device id 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for error code 400\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.equal(\"The request object is missing at least one of the required attributes or has an additional attribute.\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"device_id\": \"abc123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Test 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/tests/{{test01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{test01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Test with invalid id 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {\r",
+							"    //Check for success 404 response code\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/tests/{{invalid_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests",
+						"{{invalid_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Devices after test deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Tests after test deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create and reassign Test to Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    pm.expect(pm.response.json()[\"device_id\"]).to.eq(pm.environment.get(\"device01_id\"))\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test03_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Device Not Owner 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {\r",
+							"    //Check for 403 unauth response code\r",
+							"    pm.response.to.have.status(403);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "jwt2",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Device 401 NoAuth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {\r",
+							"    //Check for 401 unauth response code\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify device wasn't deleted 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Device 204",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {\r",
+							"    //Check for success 204 response code\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/devices/{{device01_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices",
+						"{{device01_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Tests after device deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_01\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_01\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test01 to device01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test02 to device 01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test02_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test03 to device01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test03_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test04 to device01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test04_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test05 to device 01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test05_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add test06 to device 01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"TestName\"]).to.eq(\"ndt5\");\r",
+							"    pm.expect(pm.response.json()[\"TestStartTime\"]).to.eq(\"2022-11-22T02:08:25.543610\");\r",
+							"    pm.expect(pm.response.json()[\"TestEndTime\"]).to.eq(\"2022-11-22T02:08:46.339942\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiLocation\"]).to.eq(\"dellemc2\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiConnectionType\"]).to.eq(\"wired\");\r",
+							"    pm.expect(pm.response.json()[\"MurakamiNetworkType\"]).to.eq(\"home\");\r",
+							"    pm.expect(pm.response.json()[\"ServerName\"]).to.eq( \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\");\r",
+							"    pm.expect(pm.response.json()[\"ServerIP\"]).to.eq(\"2001:2030:0:a::139\");\r",
+							"    pm.expect(pm.response.json()[\"ClientIP\"]).to.eq(\"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\");\r",
+							"    pm.expect(pm.response.json()[\"DownloadUUID\"]).to.eq(\"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadValue\"]).to.eq(674.0850946394074);\r",
+							"    pm.expect(pm.response.json()[\"DownloadUnit\"]).to.eq(\"Mbit/s\");\r",
+							"    pm.expect(pm.response.json()[\"UploadValue\"]).to.eq(36.527);\r",
+							"    pm.expect(pm.response.json()[\"UploadUnit\"]).to.eq(\"Mbit/s\"),\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransValue\"]).to.eq(0);\r",
+							"    pm.expect(pm.response.json()[\"DownloadRetransUnit\"]).to.eq(\"%\");\r",
+							"    pm.expect(pm.response.json()[\"MinRTTValue\"]).to.eq(24.327);\r",
+							"    pm.expect(pm.response.json()[\"MinRTTUnit\"]).to.eq(\"ms\")\r",
+							"    \r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/tests/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"test06_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"TestName\": \"ndt5\",\r\n    \"TestStartTime\": \"2022-11-22T02:08:25.543610\",\r\n    \"TestEndTime\": \"2022-11-22T02:08:46.339942\",\r\n    \"MurakamiLocation\": \"dellemc2\",\r\n    \"MurakamiConnectionType\": \"wired\",\r\n    \"MurakamiNetworkType\": \"home\",\r\n    \"ServerName\": \"ndt-iupui-mlab1-sea07.mlab-oti.measurement-lab.org\",\r\n    \"ServerIP\": \"2001:2030:0:a::139\",\r\n    \"ClientIP\": \"6f26:8b25:5195:67d5:ad2c:61f0:1b41:c46b\",\r\n    \"DownloadUUID\": \"ndt-l4w6d_1667169943_unsafe_00000000000FCF56\",\r\n    \"DownloadValue\": 674.0850946394074,\r\n    \"DownloadUnit\": \"Mbit/s\",\r\n    \"UploadValue\": 36.527,\r\n    \"UploadUnit\": \"Mbit/s\",\r\n    \"DownloadRetransValue\": 0.0,\r\n    \"DownloadRetransUnit\": \"%\",\r\n    \"MinRTTValue\": 24.327,\r\n    \"MinRTTUnit\": \"ms\",\r\n    \"device_id\": {{device01_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all tests with pagination",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/tests",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"tests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device02",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_02\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device02_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_02\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_03\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device03_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_03\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device04",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_04\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device04_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_04\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device05",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_05\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_05\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add device06",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"201 status code\", function () {\r",
+							"   //Check if status code is 201\r",
+							"   pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"    //Check for appropriate content including self value\r",
+							"    pm.expect(pm.response.json()[\"DeviceName\"]).to.eq(\"Test_Device_06\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceType\"]).to.eq(\"E9\");\r",
+							"    pm.expect(pm.response.json()[\"DeviceBrand\"]).to.eq(\"Dell\");\r",
+							"    pm.expect(pm.response.json()[\"tests\"]).to.deep.equal([]);\r",
+							"\r",
+							"\r",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/devices/\" + pm.response.json()[\"id\"];\r",
+							"    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"device01_id\", pm.response.json()[\"id\"])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"DeviceName\": \"Test_Device_06\",\r\n    \"DeviceType\":\"E9\",\r\n    \"DeviceBrand\":\"Dell\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all device with pagination",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {\r",
+							"    //Check for success 200 response code\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/devices",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt1}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

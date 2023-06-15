@@ -11,10 +11,12 @@ import models.datastore as datastore
 # Users can be (un)assigned a Device
 # -------------------
 
+
 KIND = "User"
 
 
-def add_user(data:dict): 
+def add_user(data:dict):
+     
     user_id = data['id']
     BASE_URL = data.pop('base_url')
     if datastore.get_entity(BASE_URL, KIND, user_id):
@@ -34,6 +36,7 @@ def get_users(base_url, filter_list=None):
 def get_all_users():
     base_url = ''
     users = datastore.get_entities(base_url, KIND)
+    print("in users", users)
     result = {'user_ids': []}
     
     for user in users:
