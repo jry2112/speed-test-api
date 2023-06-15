@@ -121,8 +121,8 @@ def verify_jwt(request):
 '''
     # Sample JWT User Profile
     {
-    'access_token': 'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiaXNzIjoiaHR0cHM6Ly9kZXYtOGR0Z2NiY2xzN2t1Y25wYS51cy5hdXRoMC5jb20vIn0..yQR_kR6VZ_a989tP.kG_7VvpuzamZ3-Mr7SWb2czG4pvEOGACM03hldV2t8gzAIc4qiMQYNUbC5PmVOWKF4VbQKhFMQPBZ7b7YrceXo_j2H1znAJsv69wKNzTtWeYrj7Cg89RsZvlg8MdIyQ_IguU7MOiDUt_qp2bKUH0_VTHukl0hFA9hL72nna201GUT2BrY0QjNWIz_Dk99xB6lLCq43Syajly3YCRD3G3Qq2yn4N28s2lXXc7ysz5ixOLxSI0MwDtf4SRsLxtEmY2W9nNnLAZVp1j-ZxT6sz5-9bZtb32DV7VHfNM-okxdZDBGndbD_V8ccL_rwo8O4blsUVsZ5D9RXaIq8FTojOoHBOi.CcNy5w2oLz_xB6MdfTJTqA',
-    'id_token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjlaeUZWeVF6ODBaeUN4NE9rX2djciJ9.eyJuaWNrbmFtZSI6InRlc3QiLCJuYW1lIjoidGVzdEBzYW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyL2EyNjVkNWI4M2YwOWEyNmY3NTlmMDlhOTMxNjAxYjhmP3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGdGUucG5nIiwidXBkYXRlZF9hdCI6IjIwMjMtMDYtMDRUMDQ6MTg6NTUuNzA0WiIsImVtYWlsIjoidGVzdEBzYW1wbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJpc3MiOiJodHRwczovL2Rldi04ZHRnY2JjbHM3a3VjbnBhLnVzLmF1dGgwLmNvbS8iLCJhdWQiOiIxak5ENXlWVW1rT2dlS2VYQjNZSVF1Z0l2d1hBdFFaRyIsImlhdCI6MTY4NTg1MjMzOSwiZXhwIjoxNjg1ODg4MzM5LCJzdWIiOiJhdXRoMHw2NDY1NjM4MWMzZjNhOGUwOGFjZjc4ZTQiLCJzaWQiOiJkX1RZbFE3QU8xSnJzc0dkNElvLUJSZXEzeGVtMlp3SSIsIm5vbmNlIjoidVJuaFVpNmxnWG9PbWFRbkg5am4ifQ.oE1kUaBtaFgiWUDDHWNnRsKt7X007jrxXw29UK8s_CJMIYCyOMH_kezTKB82Ztro2AURXKDYXscaB8X68dWEIv1w6RaTNYdOgyQnH_F4At4xykRxKS3n-ghkTsj-kQUnBFnhyIWKi5eXBeWk_77glaysDXChhxDMxf-lCVkVJ2-s027KIwtM2eA8Kgcf_iiy5eVYKqx1zYNpYTNt_qScCdIKxyb5oLb3R8KnquYk2QZtgXQNJP0v8YwMoThareEYYhcg3l1dUyFKB8QcbVoTa6gPl_J5xalKbe1EP2KM9LJonDfqyqL-trErZ4OAGUA01TGVxvTlFR-m9-ZktOXiNg',
+    'access_token': '',
+    'id_token': '',
     'scope': 'openid profile email',
     'expires_in': 86400,
     'token_type': 'Bearer',
@@ -134,13 +134,13 @@ def verify_jwt(request):
         'updated_at': '2023-06-04T04:18:55.704Z',
         'email': 'test@sample.com',
         'email_verified': False,
-        'iss': 'https://dev-8dtgcbcls7kucnpa.us.auth0.com/',
-        'aud': '1jND5yVUmkOgeKeXB3YIQugIvwXAtQZG',
+        'iss': '',
+        'aud': '',
         'iat': 1685852339,
         'exp': 1685888339,
-        'sub': 'auth0|64656381c3f3a8e08acf78e4',
-        'sid': 'd_TYlQ7AO1JrssGd4Io-BReq3xem2ZwI',
-        'nonce': 'uRnhUi6lgXoOmaQnH9jn'
+        'sub': 'auth0|',
+        'sid': '',
+        'nonce': ''
     }
 }
 '''
